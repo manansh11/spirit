@@ -108,7 +108,7 @@ export default function MindfulMoments() {
         >
           <div className="flex justify-between items-center mb-8 sm:mb-12">
             <h1 className={`text-3xl sm:text-5xl font-light ${theme === 'light' ? 'text-indigo-900' : 'text-indigo-100'} tracking-wide`}>
-              <span className="text-4xl sm:text-6xl mr-2">✨</span> Manansh's Practices
+              <span className="text-4xl sm:text-6xl mr-2">✨</span> Manansh&apos;s Practices
             </h1>
             <div className="flex items-center space-x-2">
               <motion.button 
