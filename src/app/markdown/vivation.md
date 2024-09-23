@@ -1,9 +1,15 @@
-## This practices helps you enjoy the present moment as much as possible
 ---
-Benefits:
-- Integrate emotions
-- Enjoy the present moment
-- Heal limiting beliefs
+id: vivation
+title: Vivation
+icon: 🌬️
+description: A practice of emotional healing through breath work.
+benefits:
+  - Releases emotional blockages
+  - Increases self-awareness
+  - Promotes relaxation and stress relief
+steps:
+  - Find a comfortable seated position
+  - Focus on your breath, allowing it to deepen
+  - Notice any emotions or sensations
+  - Welcome and accept these feelings without judgment
 ---
-
-This is all about breathing! It is a lot of fun
