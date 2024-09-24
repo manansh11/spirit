@@ -1,7 +1,11 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 import { NextResponse } from 'next/server';
+
+let cache = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes
 
 const parseSteps = (steps) => {
   return steps.map(step => {
@@ -10,7 +14,7 @@ const parseSteps = (steps) => {
       const [text, substeps] = Object.entries(step)[0];
       return {
         text,
-        substeps: Array.isArray(substeps) ? parseSteps(substeps.map(s => `- ${s}`)) : []
+        substeps: Array.isArray(substeps) ? parseSteps(substeps) : []
       };
     }
     return { text: String(step) };
@@ -19,13 +23,19 @@ const parseSteps = (steps) => {
 
 export async function GET() {
   try {
-    const markdownDir = path.join(process.cwd(), 'src', 'app', 'markdown');
-    const files = fs.readdirSync(markdownDir).filter(file => file.endsWith('.md'));
+    const now = Date.now();
+    if (cache && (now - cacheTimestamp) < CACHE_DURATION) {
+      return NextResponse.json({ practices: cache });
+    }
 
-    const practices = files.map(file => {
+    const markdownDir = path.join(process.cwd(), 'src', 'app', 'markdown');
+    const files = await fs.readdir(markdownDir);
+    const markdownFiles = files.filter(file => file.endsWith('.md'));
+
+    const practices = await Promise.all(markdownFiles.map(async (file) => {
       const filePath = path.join(markdownDir, file);
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      let { data, content } = matter(fileContent);
+      const fileContent = await fs.readFile(filePath, 'utf8');
+      const { data, content } = matter(fileContent);
 
       if (!data.steps || !Array.isArray(data.steps)) {
         console.error(`Invalid or missing steps in file: ${file}`);
@@ -43,7 +53,10 @@ export async function GET() {
         steps: parsedSteps,
         content: content.trim()
       };
-    });
+    }));
+
+    cache = practices;
+    cacheTimestamp = now;
 
     return NextResponse.json({ practices });
   } catch (error) {

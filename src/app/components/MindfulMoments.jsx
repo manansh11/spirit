@@ -1,25 +1,27 @@
 // src/app/components/MindfulMoments.jsx
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Feather, Moon, Sun, Menu } from 'lucide-react'
 
-const StepItem = ({ step, index, theme, depth = 0 }) => {
+const StepItem = memo(({ step, index, theme, depth = 0 }) => {
   return (
     <motion.li 
-      className={`flex items-start mt-${depth ? 2 : 0}`}
+      className={`flex items-start mt-${depth ? '2' : '0'}`}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+      transition={{ duration: 0.3, delay: 0.1 * index }}
     >
       {depth === 0 && (
-        <span className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${theme === 'light' ? 'bg-indigo-100 text-indigo-700' : 'bg-indigo-700 text-indigo-200'} flex items-center justify-center mr-2 flex-shrink-0 text-xs sm:text-sm`}>{index + 1}</span>
+        <span className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${theme === 'light' ? 'bg-indigo-100 text-indigo-700' : 'bg-indigo-700 text-indigo-200'} flex items-center justify-center mr-2 flex-shrink-0 text-xs sm:text-sm`}>
+          {index + 1}
+        </span>
       )}
       <span className="text-sm sm:text-base font-light">
-        {step.text}
+        {step.text.replace(/'/g, "&#39;")}
         {step.substeps && step.substeps.length > 0 && (
-          <ol className={`ml-4 mt-2 list-${depth % 2 ? 'alpha' : 'decimal'} pl-4`}>
+          <ol className="ml-4 mt-2 list-decimal pl-4">
             {step.substeps.map((substep, subindex) => (
               <StepItem key={subindex} step={substep} index={subindex} theme={theme} depth={depth + 1} />
             ))}
@@ -28,13 +30,12 @@ const StepItem = ({ step, index, theme, depth = 0 }) => {
       </span>
     </motion.li>
   );
-};
+});
 
 export default function MindfulMoments() {
   const [practices, setPractices] = useState([])
   const [openSection, setOpenSection] = useState('')
   const [theme, setTheme] = useState('light')
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const mainRef = useRef(null)
 
@@ -43,7 +44,7 @@ export default function MindfulMoments() {
   }
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light')
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
   const toggleMobileMenu = () => {
@@ -89,6 +90,8 @@ export default function MindfulMoments() {
     }
   }, [])
 
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
+
   return (
     <div 
       ref={mainRef}
@@ -108,7 +111,7 @@ export default function MindfulMoments() {
         >
           <div className="flex justify-between items-center mb-8 sm:mb-12">
             <h1 className={`text-3xl sm:text-5xl font-light ${theme === 'light' ? 'text-indigo-900' : 'text-indigo-100'} tracking-wide`}>
-              <span className="text-4xl sm:text-6xl mr-2">✨</span> Manansh&apos;s Practices
+              <span className="text-4xl sm:text-6xl mr-2">✨</span> Manansh&#39;s Practices
             </h1>
             <div className="flex items-center space-x-2">
               <motion.button 
@@ -145,7 +148,7 @@ export default function MindfulMoments() {
                   }}
                   className={`w-full text-left p-2 ${theme === 'light' ? 'text-indigo-900' : 'text-indigo-100'}`}
                 >
-                  {practice.title}
+                  {practice.title.replace(/'/g, "&#39;")}
                 </button>
               ))}
             </motion.div>
@@ -173,7 +176,9 @@ export default function MindfulMoments() {
                     >
                       {practice.icon}
                     </motion.span>
-                    <h2 className={`text-xl sm:text-2xl font-light ${theme === 'light' ? 'text-indigo-800' : 'text-indigo-200'}`}>{practice.title}</h2>
+                    <h2 className={`text-xl sm:text-2xl font-light ${theme === 'light' ? 'text-indigo-800' : 'text-indigo-200'}`}>
+                      {practice.title.replace(/'/g, "&#39;")}
+                    </h2>
                   </div>
                   <motion.div
                     animate={{ rotate: openSection === practice.id ? 180 : 0 }}
@@ -182,7 +187,9 @@ export default function MindfulMoments() {
                     <ChevronDown className={`w-5 h-5 sm:w-6 sm:h-6 ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-300'} transition-transform duration-300 group-hover:scale-110`} />
                   </motion.div>
                 </div>
-                <p className={`mt-2 text-sm sm:text-base ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-300'} font-light`}>{practice.description}</p>
+                <p className={`mt-2 text-sm sm:text-base ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-300'} font-light`}>
+                  {practice.description.replace(/'/g, "&#39;")}
+                </p>
               </button>
               <AnimatePresence>
                 {openSection === practice.id && (
@@ -210,7 +217,9 @@ export default function MindfulMoments() {
                               transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
                               <Feather className="w-4 h-4 sm:w-5 sm:h-5 mr-2 mt-1 flex-shrink-0" />
-                              <span className="text-sm sm:text-base font-light">{benefit}</span>
+                              <span className="text-sm sm:text-base font-light">
+                                {benefit.replace(/'/g, "&#39;")}
+                              </span>
                             </motion.li>
                           ))}
                         </ul>
@@ -221,7 +230,7 @@ export default function MindfulMoments() {
                         transition={{ duration: 0.5, delay: 0.4 }}
                       >
                         <h3 className={`text-base sm:text-lg font-medium mb-2 ${theme === 'light' ? 'text-indigo-700' : 'text-indigo-200'}`}>How to practice:</h3>
-                        <ol className={`list-none space-y-1 sm:space-y-2 ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-300'}`}>
+                        <ol className={`list-decimal space-y-1 sm:space-y-2 ${theme === 'light' ? 'text-indigo-600' : 'text-indigo-300'}`}>
                           {practice.steps.map((step, index) => (
                             <StepItem key={index} step={step} index={index} theme={theme} />
                           ))}
